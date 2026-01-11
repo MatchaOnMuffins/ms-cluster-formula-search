@@ -1,3 +1,5 @@
+import numpy as np
+
 # ----------------------------
 # Exact monoisotopic masses
 # ----------------------------
@@ -42,48 +44,71 @@ def enumerate_tBuCOO_YMn(
     tbu_max=11,
     o_max=5,
     h_max=6,
+    c_max=5,
 ):
     """
     Enumerate neutral formulas:
-        Y_x Mn_y (tBuCOO)_k O_m H_n
+        Y_x Mn_y (tBuCOO)_k O_m H_n C_c
     matching target_mass within ppm.
     """
+    # Generate all index combinations using meshgrid
+    y_vals = np.arange(y_max + 1)
+    mn_vals = np.arange(mn_max + 1)
+    k_vals = np.arange(tbu_max + 1)
+    o_vals = np.arange(o_max + 1)
+    h_vals = np.arange(h_max + 1)
+    c_vals = np.arange(c_max + 1)
+
+    y, mn, k, o, h, c = np.meshgrid(y_vals, mn_vals, k_vals, o_vals, h_vals, c_vals, indexing='ij')
+    y = y.ravel()
+    mn = mn.ravel()
+    k = k.ravel()
+    o = o.ravel()
+    h = h.ravel()
+    c = c.ravel()
+
+    # Apply filters vectorized
+    # Filter 1: y == 0 and mn == 0 -> exclude
+    valid = ~((y == 0) & (mn == 0))
+    # Filter 2: k == 0 and o == 0 -> exclude
+    valid &= ~((k == 0) & (o == 0))
+    # Filter 3: if k > 0, need (2*k + o) >= (mn + y)
+    valid &= (k == 0) | ((2 * k + o) >= (mn + y))
+
+    # Apply filter
+    y, mn, k, o, h, c = y[valid], mn[valid], k[valid], o[valid], h[valid], c[valid]
+
+    # Compute masses vectorized
+    masses = (
+        y * MASS["Y"]
+        + mn * MASS["Mn"]
+        + k * MASS["tBuCOO"]
+        + o * MASS["O"]
+        + h * MASS["H"]
+        + c * MASS["C"]
+    )
+
+    # Filter by ppm tolerance
+    tol = target_mass * ppm * 1e-6
+    ppm_mask = np.abs(masses - target_mass) <= tol
+
+    y, mn, k, o, h, c = y[ppm_mask], mn[ppm_mask], k[ppm_mask], o[ppm_mask], h[ppm_mask], c[ppm_mask]
+    masses = masses[ppm_mask]
+    ppm_errors = (masses - target_mass) / target_mass * 1e6
+
+    # Sort by absolute ppm error
+    sort_idx = np.argsort(np.abs(ppm_errors))
+
+    # Build result list
     hits = []
-    for y in range(y_max + 1):
-        for mn in range(mn_max + 1):
-            if y == 0 and mn == 0:
-                continue
+    for i in sort_idx:
+        hits.append({
+            "formula": f"Y{y[i]}Mn{mn[i]}(tBuCOO){k[i]}O{o[i]}H{h[i]}C{c[i]}",
+            "mass": masses[i],
+            "ppm_error": ppm_errors[i],
+            "counts": (int(y[i]), int(mn[i]), int(k[i]), int(o[i]), int(h[i]), int(c[i])),
+        })
 
-            for k in range(tbu_max + 1):
-                for o in range(o_max + 1):
-                    for h in range(h_max + 1):
-
-                        # minimal sanity
-                        if k == 0 and o == 0:
-                            continue
-
-                        # crude "enough O donors for metals" constraint:
-                        # each tBuCOO contributes 2 O donors, plus free O.
-                        if k > 0 and (2*k + o) < (mn + y):
-                            continue
-
-                        mass = (
-                            y  * MASS["Y"]
-                            + mn * MASS["Mn"]
-                            + k  * MASS["tBuCOO"]
-                            + o  * MASS["O"]
-                            + h  * MASS["H"]
-                        )
-
-                        if within_ppm(mass, target_mass, ppm):
-                            hits.append({
-                                "formula": f"Y{y}Mn{mn}(tBuCOO){k}O{o}H{h}",
-                                "mass": mass,
-                                "ppm_error": (mass - target_mass) / target_mass * 1e6,
-                                "counts": (y, mn, k, o, h),
-                            })
-
-    hits.sort(key=lambda x: abs(x["ppm_error"]))
     return hits
 
 
@@ -100,6 +125,7 @@ def scan_peaks_tBuCOO_YMn_negative(
     tbu_max=11,
     o_max=5,
     h_max=6,
+    c_max=5,
     max_hits_per_peak=30,       # keeps output manageable
 ):
     """
@@ -129,6 +155,7 @@ def scan_peaks_tBuCOO_YMn_negative(
                     tbu_max=tbu_max,
                     o_max=o_max,
                     h_max=h_max,
+                    c_max=c_max,
                 )
 
                 for h in hits[:max_hits_per_peak]:
@@ -146,8 +173,6 @@ def scan_peaks_tBuCOO_YMn_negative(
 
 
 if __name__ == "__main__":
-    # user can enter a peak in stdin, e.g. "1234.5678"
-    # for quick testing
     import sys
 
     if len(sys.argv) != 2:
@@ -163,8 +188,9 @@ if __name__ == "__main__":
         y_max=2,
         mn_max=5,
         tbu_max=11,
-        o_max=5,
-        h_max=6,
+        o_max=10,
+        h_max=10,
+        c_max=5,
     )
     for h in hits:
         # format this, formula first
