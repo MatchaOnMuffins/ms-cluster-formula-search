@@ -13,3 +13,5 @@ wheels/
 .claude/
 
 .DS_Store
+
+.ruff_cache/
