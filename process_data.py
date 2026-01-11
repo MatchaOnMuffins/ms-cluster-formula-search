@@ -1,5 +1,6 @@
 import numpy as np
 
+# Monoisotopic masses
 MASS = {
     "Y": 88.90584,
     "Mn": 54.938044,
