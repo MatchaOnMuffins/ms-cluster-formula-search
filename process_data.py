@@ -48,6 +48,16 @@ def enumerate_tBuCOO_YMn(
     c_max=None,
     coarseness=2,
 ):
+    """
+    Enumerate formulas Y_a Mn_b (tBuCOO)_c O_d H_e C_f matching target_mass within ppm.
+
+    Constraints:
+      - At least one metal (Y or Mn)
+      - At least one ligand (tBuCOO) or oxygen
+      - If tBuCOO present: 2*tBuCOO + O >= metals (charge balance)
+
+    Coarseness (1-3) controls extra H/C/O: 1=strict, 2=moderate, 3=loose.
+    """
     params = get_coarseness_params(coarseness)
     if h_max is None:
         h_max = params["h_max"]
@@ -124,8 +134,8 @@ def enumerate_tBuCOO_YMn(
     return hits
 
 
-def scan_peaks_tBuCOO_YMn_negative(
-    peaks,
+def search_mz_negative(
+    mz,
     ppm=5,
     charges=(-1,),
     adducts=ADDUCTS_NEG,
@@ -136,41 +146,39 @@ def scan_peaks_tBuCOO_YMn_negative(
     h_max=None,
     c_max=None,
     coarseness=2,
-    max_hits_per_peak=30,
+    max_hits=30,
 ):
     results = []
+    mz = float(mz)
 
-    for mz in peaks:
-        mz = float(mz)
+    for z in charges:
+        for ad_name, ad_mass in adducts.items():
+            neutral_mass = mz * abs(z) + ad_mass
+            if neutral_mass <= 0:
+                continue
 
-        for z in charges:
-            for ad_name, ad_mass in adducts.items():
-                neutral_mass = mz * abs(z) + ad_mass
-                if neutral_mass <= 0:
-                    continue
+            hits = enumerate_tBuCOO_YMn(
+                neutral_mass,
+                ppm=ppm,
+                y_max=y_max,
+                mn_max=mn_max,
+                tbu_max=tbu_max,
+                o_max=o_max,
+                h_max=h_max,
+                c_max=c_max,
+                coarseness=coarseness,
+            )
 
-                hits = enumerate_tBuCOO_YMn(
-                    neutral_mass,
-                    ppm=ppm,
-                    y_max=y_max,
-                    mn_max=mn_max,
-                    tbu_max=tbu_max,
-                    o_max=o_max,
-                    h_max=h_max,
-                    c_max=c_max,
-                    coarseness=coarseness,
+            for h in hits[:max_hits]:
+                results.append(
+                    {
+                        "mz": mz,
+                        "charge": z,
+                        "adduct": ad_name,
+                        "neutral_mass": neutral_mass,
+                        **h,
+                    }
                 )
-
-                for h in hits[:max_hits_per_peak]:
-                    results.append(
-                        {
-                            "mz": mz,
-                            "charge": z,
-                            "adduct": ad_name,
-                            "neutral_mass": neutral_mass,
-                            **h,
-                        }
-                    )
 
     results.sort(key=lambda r: abs(r["ppm_error"]))
     return results
@@ -201,20 +209,13 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    peaks = [args.peak_mz]
-
     if args.scan_all:
         level_names = {1: "strict", 2: "moderate", 3: "loose"}
         prev_formulas = set()
         for level in [1, 2, 3]:
-            hits = scan_peaks_tBuCOO_YMn_negative(
-                peaks,
+            hits = search_mz_negative(
+                args.peak_mz,
                 ppm=args.ppm,
-                charges=(-1,),
-                y_max=2,
-                mn_max=5,
-                tbu_max=11,
-                o_max=5,
                 coarseness=level,
             )
             params = COARSENESS_LEVELS[level]
@@ -232,14 +233,9 @@ if __name__ == "__main__":
                 )
                 prev_formulas.add(h["formula"])
     else:
-        hits = scan_peaks_tBuCOO_YMn_negative(
-            peaks,
+        hits = search_mz_negative(
+            args.peak_mz,
             ppm=args.ppm,
-            charges=(-1,),
-            y_max=2,
-            mn_max=5,
-            tbu_max=11,
-            o_max=5,
             coarseness=args.coarseness,
         )
         for h in hits:
