@@ -196,7 +196,9 @@ def format_hit(hit):
 
 
 def print_header():
-    print(f"{'Formula':24s} {'m/z':>10s}  {'z':>2s}  {'Adduct':10s} {'Neutral':>10s}  {'Error':>10s}")
+    print(
+        f"{'Formula':24s} {'m/z':>10s}  {'z':>2s}  {'Adduct':10s} {'Neutral':>10s}  {'Error':>10s}"
+    )
     print("-" * 78)
 
 
@@ -205,8 +207,10 @@ def run_scan_all(peak_mz, ppm):
     for level in [1, 2, 3]:
         hits = search_mz_negative(peak_mz, ppm=ppm, coarseness=level)
         params = COARSENESS_LEVELS[level]
-        print(f"\n[Level {level}: {LEVEL_NAMES[level]}] "
-              f"h_max={params['h_max']}, c_max={params['c_max']}, additional_o={params['additional_o']}")
+        print(
+            f"\n[Level {level}: {LEVEL_NAMES[level]}] "
+            f"h_max={params['h_max']}, c_max={params['c_max']}, additional_o={params['additional_o']}"
+        )
         new_hits = [h for h in hits if h["formula"] not in prev_formulas]
         if not new_hits:
             print("  (no new hits)")
@@ -220,18 +224,32 @@ def run_scan_all(peak_mz, ppm):
 def main():
     import argparse
 
-    parser = argparse.ArgumentParser(description="Search for formula matches for a given m/z peak")
+    parser = argparse.ArgumentParser(
+        description="Search for formula matches for a given m/z peak"
+    )
     parser.add_argument("peak_mz", type=float, help="m/z value to search")
-    parser.add_argument("-c", "--coarseness", type=int, choices=[1, 2, 3], default=2,
-                        help="1=strict, 2=moderate (default), 3=loose")
-    parser.add_argument("--scan-all", action="store_true", help="Run all coarseness levels")
-    parser.add_argument("--ppm", type=float, default=10, help="PPM tolerance (default: 10)")
+    parser.add_argument(
+        "-c",
+        "--coarseness",
+        type=int,
+        choices=[1, 2, 3],
+        default=2,
+        help="1=strict, 2=moderate (default), 3=loose",
+    )
+    parser.add_argument(
+        "--scan-all", action="store_true", help="Run all coarseness levels"
+    )
+    parser.add_argument(
+        "--ppm", type=float, default=10, help="PPM tolerance (default: 10)"
+    )
     args = parser.parse_args()
 
     if args.scan_all:
         run_scan_all(args.peak_mz, args.ppm)
     else:
-        hits = search_mz_negative(args.peak_mz, ppm=args.ppm, coarseness=args.coarseness)
+        hits = search_mz_negative(
+            args.peak_mz, ppm=args.ppm, coarseness=args.coarseness
+        )
         if hits:
             print_header()
             for h in hits:
