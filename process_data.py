@@ -184,63 +184,60 @@ def search_mz_negative(
     return results
 
 
-if __name__ == "__main__":
+LEVEL_NAMES = {1: "strict", 2: "moderate", 3: "loose"}
+
+
+def format_hit(hit):
+    return (
+        f"{hit['formula']:24s} {hit['mz']:10.4f}  {hit['charge']:+d}  "
+        f"{hit['adduct']:10s} {hit['neutral_mass']:10.4f}  {hit['ppm_error']:+6.2f} ppm"
+    )
+
+
+def print_header():
+    print(f"{'Formula':24s} {'m/z':>10s}  {'z':>2s}  {'Adduct':10s} {'Neutral':>10s}  {'Error':>10s}")
+    print("-" * 78)
+
+
+def run_scan_all(peak_mz, ppm):
+    prev_formulas = set()
+    for level in [1, 2, 3]:
+        hits = search_mz_negative(peak_mz, ppm=ppm, coarseness=level)
+        params = COARSENESS_LEVELS[level]
+        print(f"\n[Level {level}: {LEVEL_NAMES[level]}] "
+              f"h_max={params['h_max']}, c_max={params['c_max']}, additional_o={params['additional_o']}")
+        new_hits = [h for h in hits if h["formula"] not in prev_formulas]
+        if not new_hits:
+            print("  (no new hits)")
+            continue
+        print_header()
+        for h in new_hits:
+            print(format_hit(h))
+            prev_formulas.add(h["formula"])
+
+
+def main():
     import argparse
 
-    parser = argparse.ArgumentParser(
-        description="Search for formula matches for a given m/z peak"
-    )
-    parser.add_argument("peak_mz", type=float, help="The m/z value to search")
-    parser.add_argument(
-        "-c",
-        "--coarseness",
-        type=int,
-        choices=[1, 2, 3],
-        default=2,
-        help="Coarseness level for C/H enumeration: 1=strict (no extra C,H), 2=moderate, 3=loose (up to 10 extra C,H)",
-    )
-    parser.add_argument(
-        "--scan-all",
-        action="store_true",
-        help="Run all coarseness levels (1, 2, 3) and show results for each",
-    )
-    parser.add_argument(
-        "--ppm", type=float, default=10, help="PPM tolerance (default: 10)"
-    )
+    parser = argparse.ArgumentParser(description="Search for formula matches for a given m/z peak")
+    parser.add_argument("peak_mz", type=float, help="m/z value to search")
+    parser.add_argument("-c", "--coarseness", type=int, choices=[1, 2, 3], default=2,
+                        help="1=strict, 2=moderate (default), 3=loose")
+    parser.add_argument("--scan-all", action="store_true", help="Run all coarseness levels")
+    parser.add_argument("--ppm", type=float, default=10, help="PPM tolerance (default: 10)")
     args = parser.parse_args()
 
     if args.scan_all:
-        level_names = {1: "strict", 2: "moderate", 3: "loose"}
-        prev_formulas = set()
-        for level in [1, 2, 3]:
-            hits = search_mz_negative(
-                args.peak_mz,
-                ppm=args.ppm,
-                coarseness=level,
-            )
-            params = COARSENESS_LEVELS[level]
-            print(
-                f"\n=== Level {level} ({level_names[level]}): h_max={params['h_max']}, c_max={params['c_max']}, additional_o={params['additional_o']} ==="
-            )
-            new_hits = [h for h in hits if h["formula"] not in prev_formulas]
-            if not new_hits:
-                print("  (no new hits)")
-            for h in new_hits:
-                print(
-                    f"  {h['formula']:20s} mz={h['mz']:.4f} "
-                    f"charge={h['charge']} adduct={h['adduct']} "
-                    f"neutral_mass={h['neutral_mass']:.4f} ppm_error={h['ppm_error']:.2f}"
-                )
-                prev_formulas.add(h["formula"])
+        run_scan_all(args.peak_mz, args.ppm)
     else:
-        hits = search_mz_negative(
-            args.peak_mz,
-            ppm=args.ppm,
-            coarseness=args.coarseness,
-        )
-        for h in hits:
-            print(
-                f"{h['formula']:20s} mz={h['mz']:.4f} "
-                f"charge={h['charge']} adduct={h['adduct']} "
-                f"neutral_mass={h['neutral_mass']:.4f} ppm_error={h['ppm_error']:.2f}"
-            )
+        hits = search_mz_negative(args.peak_mz, ppm=args.ppm, coarseness=args.coarseness)
+        if hits:
+            print_header()
+            for h in hits:
+                print(format_hit(h))
+        else:
+            print("No matches found.")
+
+
+if __name__ == "__main__":
+    main()
