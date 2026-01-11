@@ -5,7 +5,7 @@
 This project enumerates molecular formulas of the form
 
 $$
-\mathrm{Y_aMn_b(tBuCOO)_cO_dH_eC_f}
+\mathrm{Y_{a}Mn_{b}(tBuCOO)_{c}O_{d}H_{e}C_{f}}
 $$
 
 that correspond to observed mass spectrometry peaks, matching a specified target mass within a given parts-per-million (ppm) tolerance.
