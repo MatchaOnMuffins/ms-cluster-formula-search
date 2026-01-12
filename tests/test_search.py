@@ -46,9 +46,7 @@ class TestSearchMzNegative:
 
     def test_multiple_charges(self):
         """Should search multiple charge states when requested."""
-        results = search_mz_negative(
-            500.0, ppm=100, charges=(-1, -2), coarseness=3
-        )
+        results = search_mz_negative(500.0, ppm=100, charges=(-1, -2), coarseness=3)
         charges = set(r["charge"] for r in results)
         # Might not find both, but should include at least requested charges
         assert charges.issubset({-1, -2})
@@ -107,9 +105,7 @@ class TestSearchMzNegative:
     def test_max_hits_limit(self):
         """Results should respect max_hits parameter."""
         # Use large ppm to get many hits
-        results = search_mz_negative(
-            500.0, ppm=100, max_hits=5, coarseness=3
-        )
+        results = search_mz_negative(500.0, ppm=100, max_hits=5, coarseness=3)
         # max_hits is per adduct/charge, so total could be higher
         # but should be limited per combination
         assert len(results) <= 5 * len(ADDUCTS_NEG)
@@ -172,7 +168,7 @@ class TestSearchMzNegativeKnownPeak:
         """Level 2 should find specific formulas from the example."""
         results = search_mz_negative(peak_mz, ppm=10, coarseness=2)
         formulas = [r["formula"] for r in results]
-        
+
         # From the example output (Level 2):
         # Y2Mn4(tBuCOO)10O6H3C1
         # Y2Mn4(tBuCOO)10O6H4C1
@@ -184,10 +180,10 @@ class TestSearchMzNegativeKnownPeak:
         """Level 3 should find additional formulas."""
         results_2 = search_mz_negative(peak_mz, ppm=10, coarseness=2)
         results_3 = search_mz_negative(peak_mz, ppm=10, coarseness=3)
-        
+
         formulas_2 = set(r["formula"] for r in results_2)
         formulas_3 = set(r["formula"] for r in results_3)
-        
+
         # Level 3 should find at least as many unique formulas
         assert len(formulas_3) >= len(formulas_2)
 
@@ -195,7 +191,7 @@ class TestSearchMzNegativeKnownPeak:
         """Should find matches for different adduct types."""
         results = search_mz_negative(peak_mz, ppm=10, coarseness=2)
         adducts_found = set(r["adduct"] for r in results)
-        
+
         # Should find at least some adduct types
         assert len(adducts_found) >= 1
 
@@ -204,7 +200,9 @@ class TestSearchMzNegativeKnownPeak:
         ppm = 10
         results = search_mz_negative(peak_mz, ppm=ppm, coarseness=3)
         for r in results:
-            assert abs(r["ppm_error"]) <= ppm, f"PPM error {r['ppm_error']} exceeds {ppm}"
+            assert abs(r["ppm_error"]) <= ppm, (
+                f"PPM error {r['ppm_error']} exceeds {ppm}"
+            )
 
     def test_charge_minus_one(self, peak_mz):
         """Default search should use charge -1."""

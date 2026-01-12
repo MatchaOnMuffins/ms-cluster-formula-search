@@ -61,7 +61,7 @@ class TestMainCLI:
         """CLI should work with just m/z argument."""
         captured = io.StringIO()
         sys.stdout = captured
-        
+
         test_args = ["search-formula", "1519.1540"]
         with patch.object(sys, "argv", test_args):
             try:
@@ -77,7 +77,7 @@ class TestMainCLI:
         """CLI should accept coarseness flag."""
         captured = io.StringIO()
         sys.stdout = captured
-        
+
         test_args = ["search-formula", "1519.1540", "-c", "3"]
         with patch.object(sys, "argv", test_args):
             try:
@@ -92,7 +92,7 @@ class TestMainCLI:
         """CLI should accept ppm flag."""
         captured = io.StringIO()
         sys.stdout = captured
-        
+
         test_args = ["search-formula", "1519.1540", "--ppm", "5"]
         with patch.object(sys, "argv", test_args):
             try:
@@ -108,7 +108,7 @@ class TestMainCLI:
         """CLI should accept --scan-all flag."""
         captured = io.StringIO()
         sys.stdout = captured
-        
+
         test_args = ["search-formula", "1519.1540", "--scan-all"]
         with patch.object(sys, "argv", test_args):
             try:
@@ -126,7 +126,7 @@ class TestMainCLI:
         """CLI should report when no matches found."""
         captured = io.StringIO()
         sys.stdout = captured
-        
+
         # Use a very small m/z that won't match anything
         test_args = ["search-formula", "10.0", "--ppm", "1"]
         with patch.object(sys, "argv", test_args):
@@ -142,7 +142,7 @@ class TestMainCLI:
         """CLI should work with multiple flags."""
         captured = io.StringIO()
         sys.stdout = captured
-        
+
         test_args = ["search-formula", "1519.1540", "-c", "1", "--ppm", "15"]
         with patch.object(sys, "argv", test_args):
             try:

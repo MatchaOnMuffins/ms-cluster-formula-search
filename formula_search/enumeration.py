@@ -18,8 +18,8 @@ def enumerate_tBuCOO_YMn(
     mn_max: int = 5,
     tbu_max: int = 11,
     o_max: int = 5,
-    h_max: int = None, # pyright: ignore[reportArgumentType]
-    c_max: int = None, # pyright: ignore[reportArgumentType]
+    h_max: int = None,  # pyright: ignore[reportArgumentType]
+    c_max: int = None,  # pyright: ignore[reportArgumentType]
     coarseness: int = 2,
 ) -> List[Dict[str, Any]]:
     """

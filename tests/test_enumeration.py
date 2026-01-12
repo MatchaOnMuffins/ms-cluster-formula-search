@@ -156,10 +156,7 @@ class TestEnumerateTBuCOOYMn:
         """Verify mass calculations are accurate."""
         # Y1Mn1(tBuCOO)2O1H0C0 has known mass
         expected_mass = (
-            1 * MASS["Y"]
-            + 1 * MASS["Mn"]
-            + 2 * MASS["tBuCOO"]
-            + 1 * MASS["O"]
+            1 * MASS["Y"] + 1 * MASS["Mn"] + 2 * MASS["tBuCOO"] + 1 * MASS["O"]
         )
         results = enumerate_tBuCOO_YMn(expected_mass, ppm=1, coarseness=1)
         # Should find this exact formula
