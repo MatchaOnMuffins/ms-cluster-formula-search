@@ -1,0 +1,143 @@
+{
+  "peaks": [
+    {
+      "description": "Example YMn-tBuCOO cluster peak",
+      "mz": 1519.154,
+      "ppm": 10,
+      "levels": {
+        "1": [],
+        "2": [
+          {
+            "formula": "Y2Mn4(tBuCOO)10O6H3C1",
+            "mz": 1519.154,
+            "charge": -1,
+            "adduct": "[M]−•",
+            "neutral_mass": 1519.154,
+            "ppm_error": 3.531,
+            "counts": [2, 4, 10, 6, 3, 1]
+          },
+          {
+            "formula": "Y2Mn4(tBuCOO)10O6H4C1",
+            "mz": 1519.154,
+            "charge": -1,
+            "adduct": "[M−H]−",
+            "neutral_mass": 1520.161276,
+            "ppm_error": 3.8895,
+            "counts": [2, 4, 10, 6, 4, 1]
+          },
+          {
+            "formula": "Y2Mn5(tBuCOO)10O4H3C2",
+            "mz": 1519.154,
+            "charge": -1,
+            "adduct": "[M+Cl]−",
+            "neutral_mass": 1554.122853,
+            "ppm_error": -9.8279,
+            "counts": [2, 5, 10, 4, 3, 2]
+          }
+        ],
+        "3": [
+          {
+            "formula": "Y2Mn5(tBuCOO)10O3H9C0",
+            "mz": 1519.154,
+            "charge": -1,
+            "adduct": "[M−H]−",
+            "neutral_mass": 1520.161276,
+            "ppm_error": -1.0933,
+            "counts": [2, 5, 10, 3, 9, 0]
+          },
+          {
+            "formula": "Y2Mn5(tBuCOO)10O3H8C0",
+            "mz": 1519.154,
+            "charge": -1,
+            "adduct": "[M]−•",
+            "neutral_mass": 1519.154,
+            "ppm_error": -1.4551,
+            "counts": [2, 5, 10, 3, 8, 0]
+          },
+          {
+            "formula": "Y2Mn4(tBuCOO)10O6H3C1",
+            "mz": 1519.154,
+            "charge": -1,
+            "adduct": "[M]−•",
+            "neutral_mass": 1519.154,
+            "ppm_error": 3.531,
+            "counts": [2, 4, 10, 6, 3, 1]
+          },
+          {
+            "formula": "Y2Mn4(tBuCOO)10O6H4C1",
+            "mz": 1519.154,
+            "charge": -1,
+            "adduct": "[M−H]−",
+            "neutral_mass": 1520.161276,
+            "ppm_error": 3.8895,
+            "counts": [2, 4, 10, 6, 4, 1]
+          },
+          {
+            "formula": "Y1Mn5(tBuCOO)10O9H1C0",
+            "mz": 1519.154,
+            "charge": -1,
+            "adduct": "[M]−•",
+            "neutral_mass": 1519.154,
+            "ppm_error": 4.3853,
+            "counts": [1, 5, 10, 9, 1, 0]
+          },
+          {
+            "formula": "Y1Mn5(tBuCOO)10O9H2C0",
+            "mz": 1519.154,
+            "charge": -1,
+            "adduct": "[M−H]−",
+            "neutral_mass": 1520.161276,
+            "ppm_error": 4.7432,
+            "counts": [1, 5, 10, 9, 2, 0]
+          },
+          {
+            "formula": "Y2Mn5(tBuCOO)10O0H8C4",
+            "mz": 1519.154,
+            "charge": -1,
+            "adduct": "[M]−•",
+            "neutral_mass": 1519.154,
+            "ppm_error": 8.5874,
+            "counts": [2, 5, 10, 0, 8, 4]
+          },
+          {
+            "formula": "Y2Mn4(tBuCOO)10O9H2C0",
+            "mz": 1519.154,
+            "charge": -1,
+            "adduct": "[M+Cl]−",
+            "neutral_mass": 1554.122853,
+            "ppm_error": 8.6417,
+            "counts": [2, 4, 10, 9, 2, 0]
+          },
+          {
+            "formula": "Y2Mn5(tBuCOO)10O0H9C4",
+            "mz": 1519.154,
+            "charge": -1,
+            "adduct": "[M−H]−",
+            "neutral_mass": 1520.161276,
+            "ppm_error": 8.9425,
+            "counts": [2, 5, 10, 0, 9, 4]
+          },
+          {
+            "formula": "Y2Mn5(tBuCOO)10O4H3C2",
+            "mz": 1519.154,
+            "charge": -1,
+            "adduct": "[M+Cl]−",
+            "neutral_mass": 1554.122853,
+            "ppm_error": -9.8279,
+            "counts": [2, 5, 10, 4, 3, 2]
+          }
+        ]
+      }
+    },
+    {
+      "description": "Lower mass YMn cluster",
+      "mz": 500.0,
+      "ppm": 50,
+      "levels": {
+        "1": [],
+        "2": [],
+        "3": []
+      }
+    }
+  ]
+}

@@ -3,9 +3,14 @@ name = "ms-cluster-formula-search"
 version = "0.1.0"
 description = "Mass spectrometry formula enumeration"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.11"
 dependencies = [
     "numpy",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=8.0",
 ]
 
 [project.scripts]
