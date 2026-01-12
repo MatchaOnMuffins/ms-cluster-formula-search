@@ -15,7 +15,7 @@ class TestRunScanAll:
         captured = io.StringIO()
         sys.stdout = captured
         try:
-            run_scan_all(1519.1540, ppm=10)
+            run_scan_all(1519.1540, ppm=10, mode="negative")
         finally:
             sys.stdout = sys.__stdout__
 
@@ -28,7 +28,7 @@ class TestRunScanAll:
         captured = io.StringIO()
         sys.stdout = captured
         try:
-            run_scan_all(1519.1540, ppm=10)
+            run_scan_all(1519.1540, ppm=10, mode="negative")
         finally:
             sys.stdout = sys.__stdout__
 
@@ -42,7 +42,7 @@ class TestRunScanAll:
         captured = io.StringIO()
         sys.stdout = captured
         try:
-            run_scan_all(1519.1540, ppm=10)
+            run_scan_all(1519.1540, ppm=10, mode="negative")
         finally:
             sys.stdout = sys.__stdout__
 

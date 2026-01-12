@@ -56,7 +56,7 @@ class TestIntegrationExample:
         captured = io.StringIO()
         sys.stdout = captured
         try:
-            run_scan_all(example_mz, ppm=10)
+            run_scan_all(example_mz, ppm=10, mode="negative")
         finally:
             sys.stdout = sys.__stdout__
 

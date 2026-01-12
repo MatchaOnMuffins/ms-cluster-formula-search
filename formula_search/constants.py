@@ -17,12 +17,24 @@ MASS["tBuCOO"] = 5 * MASS["C"] + 9 * MASS["H"] + 2 * MASS["O"]
 # Particle masses
 PROTON = 1.00727646688
 CL35 = 34.968852682
+NA23 = 22.98976928
+K39 = 38.96370649
+NH4 = 14.00307400443 + 4 * 1.00782503223  # N + 4H
 
 # Adduct definitions for negative ion mode
 ADDUCTS_NEG = {
     "[M−H]−": PROTON,
     "[M]−•": 0.0,
     "[M+Cl]−": CL35,
+}
+
+# Adduct definitions for positive ion mode
+ADDUCTS_POS = {
+    "[M+H]+": PROTON,
+    "[M]+•": 0.0,
+    "[M+Na]+": NA23,
+    "[M+K]+": K39,
+    "[M+NH4]+": NH4,
 }
 
 # Coarseness level parameters
