@@ -2,7 +2,7 @@
 
 import pytest
 from formula_search.enumeration import within_ppm, enumerate_tBuCOO_YMn
-from formula_search.constants import MASS
+from formula_search.constants import MASS, SUPPORTED_METALS
 
 
 class TestWithinPpm:
@@ -200,3 +200,76 @@ class TestEnumerateKnownFormulas:
         results = enumerate_tBuCOO_YMn(target, ppm=1, coarseness=1)
         found = any(hit["counts"] == (1, 0, 1, 1, 0, 0) for hit in results)
         assert found, f"Should find Y1(tBuCOO)1O1 at mass {target:.4f}"
+
+
+class TestEnumerateLanthanumSupport:
+    """Test La (lanthanum) based complex enumeration."""
+
+    def test_metal_parameter_default_is_y(self):
+        """Default metal should be Y."""
+        results = enumerate_tBuCOO_YMn(300.0, ppm=100, coarseness=3)
+        if results:
+            assert "Y" in results[0]["formula"]
+            assert "La" not in results[0]["formula"]
+
+    def test_metal_parameter_accepts_la(self):
+        """Should accept La as metal parameter."""
+        results = enumerate_tBuCOO_YMn(300.0, ppm=100, coarseness=3, metal="La")
+        if results:
+            assert "La" in results[0]["formula"]
+            assert results[0]["metal"] == "La"
+
+    def test_la_formula_format(self):
+        """La-based formulas should use La prefix."""
+        results = enumerate_tBuCOO_YMn(300.0, ppm=100, coarseness=3, metal="La")
+        if results:
+            formula = results[0]["formula"]
+            assert formula.startswith("La")
+            assert "Mn" in formula
+            assert "(tBuCOO)" in formula
+
+    def test_invalid_metal_raises_error(self):
+        """Invalid metal should raise ValueError."""
+        with pytest.raises(ValueError, match="Metal must be one of"):
+            enumerate_tBuCOO_YMn(300.0, ppm=100, metal="Fe")
+
+    def test_la_mass_calculation_accuracy(self):
+        """La complex mass calculations should be accurate."""
+        # La1Mn1(tBuCOO)2O1H0C0 has known mass
+        expected_mass = (
+            1 * MASS["La"] + 1 * MASS["Mn"] + 2 * MASS["tBuCOO"] + 1 * MASS["O"]
+        )
+        results = enumerate_tBuCOO_YMn(expected_mass, ppm=1, coarseness=1, metal="La")
+        found = any(hit["counts"] == (1, 1, 2, 1, 0, 0) for hit in results)
+        assert found, f"Should find La1Mn1(tBuCOO)2O1H0C0 at mass {expected_mass}"
+
+    def test_la_vs_y_different_masses(self):
+        """Same formula with La vs Y should have different masses."""
+        y_mass = 1 * MASS["Y"] + 1 * MASS["Mn"] + 2 * MASS["tBuCOO"] + 1 * MASS["O"]
+        la_mass = 1 * MASS["La"] + 1 * MASS["Mn"] + 2 * MASS["tBuCOO"] + 1 * MASS["O"]
+
+        # Mass difference should equal La - Y mass difference
+        expected_diff = MASS["La"] - MASS["Y"]
+        assert abs((la_mass - y_mass) - expected_diff) < 1e-6
+
+    def test_la_simple_oxide(self):
+        """Test finding a simple La oxide formula."""
+        # La2O3 mass
+        target = 2 * MASS["La"] + 3 * MASS["O"]
+        results = enumerate_tBuCOO_YMn(target, ppm=1, coarseness=1, metal="La")
+        found = any(hit["counts"] == (2, 0, 0, 3, 0, 0) for hit in results)
+        assert found, f"Should find La2O3 at mass {target:.4f}"
+
+    def test_metal_included_in_hit_dict(self):
+        """Hit dictionary should include metal type."""
+        results = enumerate_tBuCOO_YMn(300.0, ppm=100, coarseness=3, metal="La")
+        if results:
+            assert "metal" in results[0]
+            assert results[0]["metal"] == "La"
+
+    def test_y_metal_included_in_hit_dict(self):
+        """Hit dictionary for Y should also include metal type."""
+        results = enumerate_tBuCOO_YMn(300.0, ppm=100, coarseness=3, metal="Y")
+        if results:
+            assert "metal" in results[0]
+            assert results[0]["metal"] == "Y"

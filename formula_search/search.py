@@ -1,6 +1,6 @@
 """Mass spectrometry m/z search functions."""
 
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any, Tuple, Literal
 
 from .constants import ADDUCTS_NEG, ADDUCTS_POS
 from .enumeration import enumerate_tBuCOO_YMn
@@ -19,6 +19,7 @@ def search_mz_negative(
     c_max: int = None,
     coarseness: int = 2,
     max_hits: int = 30,
+    metal: Literal["Y", "La"] = "Y",
 ) -> List[Dict[str, Any]]:
     """
     Search for formula matches for a given m/z in negative ion mode.
@@ -28,7 +29,7 @@ def search_mz_negative(
         ppm: Parts per million tolerance
         charges: Tuple of charge states to consider
         adducts: Dictionary of adduct names to mass adjustments
-        y_max: Maximum yttrium count
+        y_max: Maximum count for the metal base (Y or La)
         mn_max: Maximum manganese count
         tbu_max: Maximum tert-butyl carboxylate count
         o_max: Base maximum oxygen count
@@ -36,6 +37,7 @@ def search_mz_negative(
         c_max: Maximum carbon count (overrides coarseness)
         coarseness: 1=strict, 2=moderate, 3=loose
         max_hits: Maximum hits per adduct/charge combination
+        metal: Metal base to use ("Y" for yttrium, "La" for lanthanum)
 
     Returns:
         List of result dictionaries sorted by absolute ppm error
@@ -62,6 +64,7 @@ def search_mz_negative(
                 h_max=h_max,
                 c_max=c_max,
                 coarseness=coarseness,
+                metal=metal,
             )
 
             for h in hits[:max_hits]:
@@ -92,6 +95,7 @@ def search_mz_positive(
     c_max: int = None,
     coarseness: int = 2,
     max_hits: int = 30,
+    metal: Literal["Y", "La"] = "Y",
 ) -> List[Dict[str, Any]]:
     """
     Search for formula matches for a given m/z in positive ion mode.
@@ -101,7 +105,7 @@ def search_mz_positive(
         ppm: Parts per million tolerance
         charges: Tuple of charge states to consider
         adducts: Dictionary of adduct names to mass adjustments
-        y_max: Maximum yttrium count
+        y_max: Maximum count for the metal base (Y or La)
         mn_max: Maximum manganese count
         tbu_max: Maximum tert-butyl carboxylate count
         o_max: Base maximum oxygen count
@@ -109,6 +113,7 @@ def search_mz_positive(
         c_max: Maximum carbon count (overrides coarseness)
         coarseness: 1=strict, 2=moderate, 3=loose
         max_hits: Maximum hits per adduct/charge combination
+        metal: Metal base to use ("Y" for yttrium, "La" for lanthanum)
 
     Returns:
         List of result dictionaries sorted by absolute ppm error
@@ -136,6 +141,7 @@ def search_mz_positive(
                 h_max=h_max,
                 c_max=c_max,
                 coarseness=coarseness,
+                metal=metal,
             )
 
             for h in hits[:max_hits]:

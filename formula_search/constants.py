@@ -5,11 +5,15 @@ import numpy as np
 # Monoisotopic masses (in Daltons)
 MASS = {
     "Y": 88.90584,
+    "La": 138.90547,
     "Mn": 54.938044,
     "O": 15.99491461957,
     "H": 1.00782503223,
     "C": 12.0,
 }
+
+# Supported metal bases for complexes
+SUPPORTED_METALS = ("Y", "La")
 
 # Derived masses
 MASS["tBuCOO"] = 5 * MASS["C"] + 9 * MASS["H"] + 2 * MASS["O"]

@@ -11,6 +11,7 @@ from .constants import (
     ADDUCTS_POS,
     COARSENESS_LEVELS,
     LEVEL_NAMES,
+    SUPPORTED_METALS,
     get_coarseness_params,
 )
 from .enumeration import enumerate_tBuCOO_YMn, within_ppm
@@ -30,6 +31,7 @@ __all__ = [
     "ADDUCTS_POS",
     "COARSENESS_LEVELS",
     "LEVEL_NAMES",
+    "SUPPORTED_METALS",
     "get_coarseness_params",
     # Enumeration
     "enumerate_tBuCOO_YMn",

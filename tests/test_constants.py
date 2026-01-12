@@ -5,9 +5,14 @@ from formula_search.constants import (
     MASS,
     PROTON,
     CL35,
+    NA23,
+    K39,
+    NH4,
     ADDUCTS_NEG,
+    ADDUCTS_POS,
     COARSENESS_LEVELS,
     LEVEL_NAMES,
+    SUPPORTED_METALS,
     get_coarseness_params,
 )
 
@@ -17,13 +22,17 @@ class TestMassConstants:
 
     def test_elemental_masses_exist(self):
         """Verify all required elemental masses are defined."""
-        required = ["Y", "Mn", "O", "H", "C", "tBuCOO"]
+        required = ["Y", "La", "Mn", "O", "H", "C", "tBuCOO"]
         for element in required:
             assert element in MASS, f"Missing mass for {element}"
 
     def test_yttrium_mass(self):
         """Yttrium monoisotopic mass should be ~88.906 Da."""
         assert abs(MASS["Y"] - 88.90584) < 1e-5
+
+    def test_lanthanum_mass(self):
+        """Lanthanum monoisotopic mass should be ~138.905 Da."""
+        assert abs(MASS["La"] - 138.90547) < 1e-5
 
     def test_manganese_mass(self):
         """Manganese monoisotopic mass should be ~54.938 Da."""
@@ -63,9 +72,23 @@ class TestParticleMasses:
         """Chlorine-35 mass should be ~34.969 Da."""
         assert abs(CL35 - 34.968852682) < 1e-9
 
+    def test_sodium23_mass(self):
+        """Sodium-23 mass should be ~22.990 Da."""
+        assert abs(NA23 - 22.98976928) < 1e-8
 
-class TestAdducts:
-    """Test adduct definitions."""
+    def test_potassium39_mass(self):
+        """Potassium-39 mass should be ~38.964 Da."""
+        assert abs(K39 - 38.96370649) < 1e-8
+
+    def test_ammonium_mass(self):
+        """Ammonium (NH4) mass should be ~18.034 Da."""
+        expected = 14.00307400443 + 4 * 1.00782503223  # N + 4H
+        assert abs(NH4 - expected) < 1e-10
+        assert 18.0 < NH4 < 18.1
+
+
+class TestAdductsNegative:
+    """Test negative adduct definitions."""
 
     def test_negative_adducts_exist(self):
         """Verify all expected negative adducts are defined."""
@@ -84,6 +107,36 @@ class TestAdducts:
     def test_chloride_adduct(self):
         """[M+Cl]- should add Cl-35 mass."""
         assert ADDUCTS_NEG["[M+Cl]−"] == CL35
+
+
+class TestAdductsPositive:
+    """Test positive adduct definitions."""
+
+    def test_positive_adducts_exist(self):
+        """Verify all expected positive adducts are defined."""
+        expected = ["[M+H]+", "[M]+•", "[M+Na]+", "[M+K]+", "[M+NH4]+"]
+        for adduct in expected:
+            assert adduct in ADDUCTS_POS, f"Missing adduct: {adduct}"
+
+    def test_protonated_adduct(self):
+        """[M+H]+ should subtract proton mass from observed."""
+        assert ADDUCTS_POS["[M+H]+"] == PROTON
+
+    def test_radical_cation_adduct(self):
+        """[M]+• should have no mass adjustment."""
+        assert ADDUCTS_POS["[M]+•"] == 0.0
+
+    def test_sodiated_adduct(self):
+        """[M+Na]+ should use Na-23 mass."""
+        assert ADDUCTS_POS["[M+Na]+"] == NA23
+
+    def test_potassiated_adduct(self):
+        """[M+K]+ should use K-39 mass."""
+        assert ADDUCTS_POS["[M+K]+"] == K39
+
+    def test_ammoniated_adduct(self):
+        """[M+NH4]+ should use NH4 mass."""
+        assert ADDUCTS_POS["[M+NH4]+"] == NH4
 
 
 class TestCoarsenessLevels:
@@ -144,3 +197,24 @@ class TestGetCoarsenessParams:
         """Negative level should raise ValueError."""
         with pytest.raises(ValueError, match="must be 1, 2, or 3"):
             get_coarseness_params(-1)
+
+
+class TestSupportedMetals:
+    """Test supported metals configuration."""
+
+    def test_supported_metals_contains_yttrium(self):
+        """Y (yttrium) should be in SUPPORTED_METALS."""
+        assert "Y" in SUPPORTED_METALS
+
+    def test_supported_metals_contains_lanthanum(self):
+        """La (lanthanum) should be in SUPPORTED_METALS."""
+        assert "La" in SUPPORTED_METALS
+
+    def test_supported_metals_is_tuple(self):
+        """SUPPORTED_METALS should be a tuple."""
+        assert isinstance(SUPPORTED_METALS, tuple)
+
+    def test_all_supported_metals_have_masses(self):
+        """All supported metals should have masses defined in MASS."""
+        for metal in SUPPORTED_METALS:
+            assert metal in MASS, f"Missing mass for supported metal {metal}"

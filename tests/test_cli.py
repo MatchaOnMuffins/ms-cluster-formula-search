@@ -53,6 +53,19 @@ class TestRunScanAll:
         assert "moderate" in output
         assert "loose" in output
 
+    def test_run_scan_all_positive_mode(self):
+        """run_scan_all should work with positive mode."""
+        captured = io.StringIO()
+        sys.stdout = captured
+        try:
+            run_scan_all(500.0, ppm=50, mode="positive")
+        finally:
+            sys.stdout = sys.__stdout__
+
+        output = captured.getvalue()
+        assert len(output) > 0
+        assert "Level" in output
+
 
 class TestMainCLI:
     """Test the main CLI entry point."""
@@ -151,4 +164,102 @@ class TestMainCLI:
                 sys.stdout = sys.__stdout__
 
         output = captured.getvalue()
+        assert len(output) > 0
+
+
+class TestPositiveModeCLI:
+    """Test CLI with positive ion mode."""
+
+    def test_main_positive_mode_short_flag(self):
+        """CLI should accept -m positive flag."""
+        captured = io.StringIO()
+        sys.stdout = captured
+
+        test_args = ["search-formula", "500.0", "-m", "positive", "--ppm", "50"]
+        with patch.object(sys, "argv", test_args):
+            try:
+                main()
+            finally:
+                sys.stdout = sys.__stdout__
+
+        output = captured.getvalue()
+        assert len(output) > 0
+
+    def test_main_positive_mode_long_flag(self):
+        """CLI should accept --mode positive flag."""
+        captured = io.StringIO()
+        sys.stdout = captured
+
+        test_args = ["search-formula", "500.0", "--mode", "positive", "--ppm", "50"]
+        with patch.object(sys, "argv", test_args):
+            try:
+                main()
+            finally:
+                sys.stdout = sys.__stdout__
+
+        output = captured.getvalue()
+        assert len(output) > 0
+
+    def test_main_negative_mode_explicit(self):
+        """CLI should accept --mode negative flag."""
+        captured = io.StringIO()
+        sys.stdout = captured
+
+        test_args = ["search-formula", "1519.1540", "--mode", "negative"]
+        with patch.object(sys, "argv", test_args):
+            try:
+                main()
+            finally:
+                sys.stdout = sys.__stdout__
+
+        output = captured.getvalue()
+        assert len(output) > 0
+
+    def test_main_positive_mode_scan_all(self):
+        """CLI should accept positive mode with --scan-all."""
+        captured = io.StringIO()
+        sys.stdout = captured
+
+        test_args = ["search-formula", "500.0", "--mode", "positive", "--scan-all", "--ppm", "50"]
+        with patch.object(sys, "argv", test_args):
+            try:
+                main()
+            finally:
+                sys.stdout = sys.__stdout__
+
+        output = captured.getvalue()
+        assert "Level 1" in output
+        assert "Level 2" in output
+        assert "Level 3" in output
+
+    def test_main_positive_mode_with_coarseness(self):
+        """CLI should accept positive mode with coarseness."""
+        captured = io.StringIO()
+        sys.stdout = captured
+
+        test_args = ["search-formula", "500.0", "-m", "positive", "-c", "3", "--ppm", "50"]
+        with patch.object(sys, "argv", test_args):
+            try:
+                main()
+            finally:
+                sys.stdout = sys.__stdout__
+
+        output = captured.getvalue()
+        assert len(output) > 0
+
+    def test_default_mode_is_negative(self):
+        """Without --mode flag, should default to negative mode."""
+        captured = io.StringIO()
+        sys.stdout = captured
+
+        # This is already implicitly tested, but let's be explicit
+        test_args = ["search-formula", "1519.1540"]
+        with patch.object(sys, "argv", test_args):
+            try:
+                main()
+            finally:
+                sys.stdout = sys.__stdout__
+
+        output = captured.getvalue()
+        # Should find results (negative mode finds matches for 1519.1540)
         assert len(output) > 0
