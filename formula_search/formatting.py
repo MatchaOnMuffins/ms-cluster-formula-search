@@ -8,7 +8,7 @@ from .constants import COARSENESS_LEVELS, LEVEL_NAMES
 def format_hit(hit: Dict[str, Any]) -> str:
     """Format a single hit as a fixed-width string for display."""
     return (
-        f"{hit['formula']:24s} {hit['mz']:10.4f}  {hit['charge']:+d}  "
+        f"{hit['formula']:30s} {hit['mz']:10.4f}  {hit['charge']:+d}  "
         f"{hit['adduct']:10s} {hit['neutral_mass']:10.4f}  {hit['ppm_error']:+6.2f} ppm"
     )
 
@@ -16,7 +16,7 @@ def format_hit(hit: Dict[str, Any]) -> str:
 def print_header() -> None:
     """Print the header row for results table."""
     print(
-        f"{'Formula':24s} {'m/z':>10s}  {'z':>2s}  {'Adduct':10s} {'Neutral':>10s}  {'Error':>10s}"
+        f"{'Formula':30s} {'m/z':>10s}  {'z':>2s}  {'Adduct':10s} {'Neutral':>10s}  {'Error':>10s}"
     )
     print("-" * 78)
 
@@ -34,5 +34,5 @@ def print_level_header(level: int) -> None:
     params = COARSENESS_LEVELS[level]
     print(
         f"\n[Level {level}: {LEVEL_NAMES[level]}] "
-        f"h_max={params['h_max']}, c_max={params['c_max']}, additional_o={params['additional_o']}"
+        f"h_max={params['h_max']}, c_max={params['c_max']}, f_max={params['f_max']}, n_max={params['n_max']}, additional_o={params['additional_o']}"
     )

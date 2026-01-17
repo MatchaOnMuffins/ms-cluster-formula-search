@@ -20,6 +20,8 @@ def enumerate_tBuCOO_YMn(
     o_max: int = 5,
     h_max: int = None,  # pyright: ignore[reportArgumentType]
     c_max: int = None,  # pyright: ignore[reportArgumentType]
+    f_max: int = None,  # pyright: ignore[reportArgumentType]
+    n_max: int = None,  # pyright: ignore[reportArgumentType]
     coarseness: int = 2,
     metal: Literal["Y", "La"] = "Y",
 ) -> List[Dict[str, Any]]:
@@ -55,6 +57,10 @@ def enumerate_tBuCOO_YMn(
         h_max = params["h_max"]
     if c_max is None:
         c_max = params["c_max"]
+    if f_max is None:
+        f_max = params["f_max"]
+    if n_max is None:
+        n_max = params["n_max"]
     o_max_total = o_max + params["additional_o"]
 
     y_vals = np.arange(y_max + 1)
@@ -63,9 +69,10 @@ def enumerate_tBuCOO_YMn(
     o_vals = np.arange(o_max_total + 1)
     h_vals = np.arange(h_max + 1)
     c_vals = np.arange(c_max + 1)
-
-    y, mn, k, o, h, c = np.meshgrid(
-        y_vals, mn_vals, k_vals, o_vals, h_vals, c_vals, indexing="ij"
+    f_vals = np.arange(f_max + 1)
+    n_vals = np.arange(n_max + 1)
+    y, mn, k, o, h, c, f, n = np.meshgrid(
+        y_vals, mn_vals, k_vals, o_vals, h_vals, c_vals, f_vals, n_vals, indexing="ij"
     )
     y = y.ravel()
     mn = mn.ravel()
@@ -73,13 +80,14 @@ def enumerate_tBuCOO_YMn(
     o = o.ravel()
     h = h.ravel()
     c = c.ravel()
-
+    f = f.ravel()
+    n = n.ravel()
     # Apply constraints
     valid = ~((y == 0) & (mn == 0))  # At least one metal
     valid &= ~((k == 0) & (o == 0))  # At least one ligand or oxygen
     valid &= (k == 0) | ((2 * k + o) >= (mn + y))  # Charge balance
 
-    y, mn, k, o, h, c = y[valid], mn[valid], k[valid], o[valid], h[valid], c[valid]
+    y, mn, k, o, h, c, f, n = y[valid], mn[valid], k[valid], o[valid], h[valid], c[valid], f[valid], n[valid]
 
     # Calculate masses using the selected metal
     masses = (
@@ -89,19 +97,23 @@ def enumerate_tBuCOO_YMn(
         + o * MASS["O"]
         + h * MASS["H"]
         + c * MASS["C"]
+        + f * MASS["F"]
+        + n * MASS["N"]
     )
 
     # Filter by ppm tolerance
     tol = target_mass * ppm * 1e-6
     ppm_mask = np.abs(masses - target_mass) <= tol
 
-    y, mn, k, o, h, c = (
+    y, mn, k, o, h, c, f, n = (
         y[ppm_mask],
         mn[ppm_mask],
         k[ppm_mask],
         o[ppm_mask],
         h[ppm_mask],
         c[ppm_mask],
+        f[ppm_mask],
+        n[ppm_mask],
     )
     masses = masses[ppm_mask]
     ppm_errors = (masses - target_mass) / target_mass * 1e6
@@ -113,7 +125,7 @@ def enumerate_tBuCOO_YMn(
     for i in sort_idx:
         hits.append(
             {
-                "formula": f"{metal}{y[i]}Mn{mn[i]}(tBuCOO){k[i]}O{o[i]}H{h[i]}C{c[i]}",
+                "formula": f"{metal}{y[i]}Mn{mn[i]}(tBuCOO){k[i]}O{o[i]}H{h[i]}C{c[i]}F{f[i]}N{n[i]}",
                 "mass": masses[i],
                 "ppm_error": ppm_errors[i],
                 "counts": (
@@ -123,6 +135,8 @@ def enumerate_tBuCOO_YMn(
                     int(o[i]),
                     int(h[i]),
                     int(c[i]),
+                    int(f[i]),
+                    int(n[i]),
                 ),
                 "metal": metal,
             }

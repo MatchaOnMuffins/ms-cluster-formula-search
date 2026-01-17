@@ -10,6 +10,8 @@ MASS = {
     "O": 15.99491461957,
     "H": 1.00782503223,
     "C": 12.0,
+    "F": 18.998403163,
+    "N": 14.00307400443,
 }
 
 # Supported metal bases for complexes
@@ -44,9 +46,9 @@ ADDUCTS_POS = {
 # Coarseness level parameters
 # Controls how much extra H/C/O to allow in formula enumeration
 COARSENESS_LEVELS = {
-    1: {"h_max": 0, "c_max": 0, "additional_o": 0},  # strict
-    2: {"h_max": 4, "c_max": 2, "additional_o": 2},  # moderate
-    3: {"h_max": 10, "c_max": 5, "additional_o": 5},  # loose
+    1: {"h_max": 0, "c_max": 0, "f_max": 0, "n_max": 0, "additional_o": 0},  # strict
+    2: {"h_max": 4, "c_max": 2, "f_max": 1, "n_max": 1, "additional_o": 2},  # moderate
+    3: {"h_max": 10, "c_max": 5, "f_max": 2, "n_max": 2, "additional_o": 5},  # loose
 }
 
 LEVEL_NAMES = {1: "strict", 2: "moderate", 3: "loose"}
@@ -59,7 +61,7 @@ def get_coarseness_params(level: int) -> dict:
         level: Coarseness level (1=strict, 2=moderate, 3=loose)
 
     Returns:
-        Dictionary with h_max, c_max, and additional_o values
+        Dictionary with h_max, c_max, f_max, n_max, and additional_o values
 
     Raises:
         ValueError: If level is not 1, 2, or 3
