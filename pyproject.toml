@@ -6,6 +6,8 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "numpy",
+    "mcp[cli]>=1.0.0",
+    "pydantic>=2.0",
 ]
 
 [project.optional-dependencies]
@@ -15,3 +17,4 @@ test = [
 
 [project.scripts]
 search-formula = "formula_search:main"
+formula-search-mcp = "formula_search.mcp_server:mcp.run"
